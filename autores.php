@@ -376,10 +376,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
                         <label>📝 Nombre completo</label>
                         <input type="text" name="nombre" required placeholder="Ej: Gabriel García Márquez">
                     </div>
-                    <div class="form-group">
-                        <label>🌍 Nacionalidad</label>
-                        <input type="text" name="nacionalidad" placeholder="Ej: Colombiana">
-                    </div>
                     <div>
                         <button type="submit" name="agregar" class="btn btn-success">
                             <i class="fas fa-save"></i> Guardar
@@ -405,7 +401,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
-                            <th>Nacionalidad</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -415,7 +410,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
                                 <tr class="autor-fila">
                                     <td style="color: #00ffcc;"><?= $autor['id'] ?></td>
                                     <td class="nombre-autor"><?= htmlspecialchars($autor['nombre']) ?></td>
-                                    <td><?= htmlspecialchars($autor['nacionalidad'] ?: '—') ?></td>
                                     <td>
                                         <a href="?eliminar=<?= $autor['id'] ?>" 
                                            class="btn btn-danger btn-sm" 
