@@ -303,17 +303,17 @@ $user_email = $_SESSION['user_email'];
         <div class="stats-grid">
             <div class="stat-card">
                 <i class="fas fa-book"></i>
-                <h3 id="totalLibros">0</h3>
+                <h3 id="$totalLibros">0</h3>
                 <p>Libros disponibles</p>
             </div>
             <div class="stat-card">
                 <i class="fas fa-users"></i>
-                <h3 id="totalAutores">0</h3>
+                <h3 id="$totalAutores">0</h3>
                 <p>Autores registrados</p>
             </div>
             <div class="stat-card">
                 <i class="fas fa-exchange-alt"></i>
-                <h3 id="totalPrestamos">0</h3>
+                <h3 id="$totalPrestamos">0</h3>
                 <p>Préstamos activos</p>
             </div>
         </div>
