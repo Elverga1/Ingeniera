@@ -1,16 +1,35 @@
 <?php
 session_start();
+
+// ✅ VERIFICAR COOKIE si no hay sesión
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
-    exit;
+    if (isset($_COOKIE['sesion_biblioteca'])) {
+        $cookie_data = $_COOKIE['sesion_biblioteca'];
+        $partes = explode('|', $cookie_data);
+        
+        if (count($partes) >= 3) {
+            $_SESSION['user_id'] = $partes[0];
+            $_SESSION['user_name'] = $partes[1];
+            $_SESSION['user_email'] = $partes[2];
+        } else {
+            header('Location: login.php');
+            exit;
+        }
+    } else {
+        header('Location: login.php');
+        exit;
+    }
 }
+
+$user_name = $_SESSION['user_name'];
+$user_email = $_SESSION['user_email'];
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Biblioteca Virtual</title>
+    <title>Dashboard | Biblioteca Neon</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -23,22 +42,45 @@ if (!isset($_SESSION['user_id'])) {
         body {
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background: radial-gradient(circle at center, #0a0f1e 0%, #03050b 100%);
             position: relative;
             overflow-x: hidden;
         }
 
+        /* Grid neon de fondo */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(#00ffcc20 1px, transparent 1px),
+                linear-gradient(90deg, #00ffcc20 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        /* Libros flotantes neon */
         .floating-book {
             position: absolute;
             font-size: 3rem;
-            opacity: 0.05;
+            opacity: 0.15;
             pointer-events: none;
             animation: float 20s infinite linear;
+            filter: drop-shadow(0 0 10px #00ffcc);
         }
 
         @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); }
-            100% { transform: translateY(-20vh) rotate(360deg); }
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
         }
 
         .book-1 { left: 5%; animation-duration: 18s; }
@@ -54,11 +96,12 @@ if (!isset($_SESSION['user_id'])) {
             padding: 30px;
         }
 
-        /* Header */
+        /* Header Neon */
         .header {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid #00ffcc;
+            border-radius: 32px;
             padding: 20px 30px;
             margin-bottom: 30px;
             display: flex;
@@ -66,19 +109,16 @@ if (!isset($_SESSION['user_id'])) {
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 0 30px #00ffcc40;
         }
 
         .logo-area h1 {
             font-size: 1.5rem;
-            color: #1a1a2e;
+            color: #00ffcc;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .logo-area h1 i {
-            color: #667eea;
+            text-shadow: 0 0 5px #00ffcc;
         }
 
         .user-info {
@@ -91,19 +131,22 @@ if (!isset($_SESSION['user_id'])) {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #00ffcc20, #ff00cc20);
+            border: 1px solid #00ffcc;
             padding: 8px 20px;
             border-radius: 50px;
-            color: white;
+            color: #00ffcc;
         }
 
         .user-badge i {
             font-size: 1.2rem;
+            color: #ff00cc;
         }
 
         .btn-logout {
-            background: #dc2626;
-            color: white;
+            background: #ff00cc20;
+            border: 1px solid #ff00cc;
+            color: #ff00cc;
             padding: 10px 24px;
             border-radius: 50px;
             text-decoration: none;
@@ -115,8 +158,9 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         .btn-logout:hover {
-            background: #b91c1c;
-            transform: scale(0.95);
+            background: #ff00cc;
+            color: #0a0f1e;
+            box-shadow: 0 0 20px #ff00cc;
         }
 
         /* Stats Cards */
@@ -128,32 +172,36 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid #00ffcc;
             border-radius: 24px;
             padding: 25px;
             text-align: center;
-            transition: transform 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 0 30px #00ffcc40;
+            border-color: #ff00cc;
         }
 
         .stat-card i {
             font-size: 2.5rem;
-            color: #667eea;
+            color: #00ffcc;
             margin-bottom: 15px;
         }
 
         .stat-card h3 {
             font-size: 2rem;
-            color: #1a1a2e;
+            color: #00ffcc;
             margin-bottom: 5px;
+            text-shadow: 0 0 5px #00ffcc;
         }
 
         .stat-card p {
-            color: #666;
+            color: #cc88ff;
             font-size: 0.9rem;
         }
 
@@ -165,30 +213,33 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         .menu-card {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid #00ffcc;
             border-radius: 24px;
             overflow: hidden;
             transition: all 0.3s ease;
             text-decoration: none;
             color: inherit;
             display: block;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .menu-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 0 40px #00ffcc60;
+            border-color: #ff00cc;
         }
 
         .card-icon {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #00ffcc20, #ff00cc20);
             padding: 40px;
             text-align: center;
+            border-bottom: 1px solid #00ffcc;
         }
 
         .card-icon i {
             font-size: 3.5rem;
-            color: white;
+            color: #00ffcc;
         }
 
         .card-content {
@@ -198,21 +249,23 @@ if (!isset($_SESSION['user_id'])) {
         .card-content h3 {
             font-size: 1.5rem;
             margin-bottom: 10px;
-            color: #1a1a2e;
+            color: #00ffcc;
         }
 
         .card-content p {
-            color: #666;
+            color: #cc88ff;
             line-height: 1.5;
         }
 
         .cookie-info {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(10, 15, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid #00ffcc;
             border-radius: 16px;
             padding: 15px 20px;
             margin-top: 30px;
             font-size: 0.85rem;
-            color: #666;
+            color: #00ffcc;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -234,12 +287,12 @@ if (!isset($_SESSION['user_id'])) {
     <div class="dashboard-container">
         <div class="header">
             <div class="logo-area">
-                <h1><i class="fas fa-book-reader"></i> Biblioteca Virtual</h1>
+                <h1><i class="fas fa-book-reader"></i> Biblioteca Neon</h1>
             </div>
             <div class="user-info">
                 <div class="user-badge">
                     <i class="fas fa-user-circle"></i>
-                    <span><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                    <span><?= htmlspecialchars($user_name) ?></span>
                 </div>
                 <a href="logout.php" class="btn-logout">
                     <i class="fas fa-sign-out-alt"></i> Cerrar sesión
@@ -299,9 +352,10 @@ if (!isset($_SESSION['user_id'])) {
 
         <div class="cookie-info">
             <i class="fas fa-cookie-bite"></i>
-            <span>🍪 Información de cookies activas:</span>
-            <span>Email: <?= $_COOKIE['user_email'] ?? 'No disponible' ?></span>
-            <span>| Nombre: <?= $_COOKIE['user_name'] ?? 'No disponible' ?></span>
+            <span>🍪 Cookies activas:</span>
+            <span>✅ sesion_biblioteca: <?= isset($_COOKIE['sesion_biblioteca']) ? 'Activa' : 'No' ?></span>
+            <span>| Email: <?= $_COOKIE['user_email'] ?? 'No' ?></span>
+            <span>| Nombre: <?= $_COOKIE['user_name'] ?? 'No' ?></span>
         </div>
     </div>
 
