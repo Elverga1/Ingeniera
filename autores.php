@@ -23,18 +23,21 @@ if (!isset($_SESSION['user_id'])) {
 $mensaje = '';
 $error = '';
 
-// Agregar autor
+// Agregar autor (SIN nacionalidad)
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['agregar'])) {
     $nombre = trim($_POST['nombre']);
     
     if (empty($nombre)) {
         $error = "❌ El nombre del autor es obligatorio.";
     } else {
-        $stmt = $pdo->prepare("INSERT INTO autores (nombre) VALUES (?, ?)");
-        if ($stmt->execute([$nombre])) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO autores (nombre) VALUES (?)");
+            $stmt->execute([$nombre]);
             $mensaje = "✅ Autor agregado correctamente.";
-        } else {
-            $error = "❌ Error al agregar autor.";
+            header('Location: autores.php');
+            exit;
+        } catch (PDOException $e) {
+            $error = "❌ Error al agregar: " . $e->getMessage();
         }
     }
 }
@@ -84,7 +87,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             overflow-x: hidden;
         }
 
-        /* Grid neon de fondo */
         body::before {
             content: '';
             position: absolute;
@@ -111,7 +113,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             padding: 20px;
         }
 
-        /* Top Bar Neon */
         .top-bar {
             background: rgba(10, 15, 30, 0.85);
             backdrop-filter: blur(12px);
@@ -144,7 +145,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             color: #00ffcc;
         }
 
-        /* Tarjetas */
         .card {
             background: rgba(10, 15, 30, 0.85);
             backdrop-filter: blur(12px);
@@ -171,14 +171,13 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             display: inline-block;
         }
 
-        /* Formulario */
         .form-group label {
             color: #00ffcc;
             margin-bottom: 8px;
             display: block;
         }
 
-        input, select {
+        input {
             width: 100%;
             padding: 12px 16px;
             background: #00ffcc10;
@@ -190,17 +189,12 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             transition: all 0.3s ease;
         }
 
-        input:focus, select:focus {
+        input:focus {
             outline: none;
             border-color: #ff00cc;
             box-shadow: 0 0 15px #ff00cc;
         }
 
-        input::placeholder {
-            color: #00ffcc60;
-        }
-
-        /* Botones */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -254,7 +248,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             font-size: 0.85rem;
         }
 
-        /* Tabla */
         .table-container {
             overflow-x: auto;
             border-radius: 16px;
@@ -284,7 +277,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             color: #00ffcc;
         }
 
-        /* Búsqueda */
         .search-box {
             display: flex;
             justify-content: flex-end;
@@ -296,7 +288,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             padding: 10px 16px;
         }
 
-        /* Alertas */
         .alert {
             padding: 12px 18px;
             border-radius: 16px;
@@ -316,7 +307,6 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             color: #ff00cc;
         }
 
-        /* Mensaje sin datos */
         .empty-table {
             text-align: center;
             padding: 50px;
@@ -328,10 +318,9 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
             margin-bottom: 15px;
         }
 
-        /* Layout formulario */
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr auto;
+            grid-template-columns: 1fr auto;
             gap: 15px;
             align-items: end;
         }
@@ -421,7 +410,7 @@ $autores = $pdo->query("SELECT * FROM autores ORDER BY id DESC")->fetchAll();
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" class="empty-table">
+                                <td colspan="3" class="empty-table">
                                     <i class="fas fa-users"></i>
                                     <p>No hay autores registrados.</p>
                                     <p style="font-size: 0.85rem;">Usa el formulario de arriba para agregar tu primer autor.</p>
