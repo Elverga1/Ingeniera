@@ -29,129 +29,199 @@ $libros = $pdo->query("SELECT * FROM libros ORDER BY id DESC")->fetchAll();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(145deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            position: relative;
-        }
-        .floating-book {
-            position: absolute;
-            font-size: 3rem;
-            opacity: 0.05;
-            pointer-events: none;
-            animation: float 20s infinite linear;
-        }
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); }
-            100% { transform: translateY(-20vh) rotate(360deg); }
-        }
-        .book-1 { left: 5%; animation-duration: 18s; }
-        .book-2 { left: 15%; animation-duration: 22s; animation-delay: 2s; }
-        .container {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px;
-        }
-        .header {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 24px;
-            padding: 20px 30px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        .header h1 { display: flex; align-items: center; gap: 10px; color: #1a1a2e; }
-        .header h1 i { color: #667eea; }
-        .btn-back {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 10px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .form-card, .table-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 24px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 15px;
-            align-items: end;
-        }
-        .input-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #1a1a2e;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-        .input-group input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        th {
-            background: #f7fafc;
-            color: #1a1a2e;
-        }
-        .btn-delete {
-            color: #dc2626;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .btn-delete:hover { background: #fee2e2; }
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .container { padding: 15px; }
-        }
-    </style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        min-height: 100vh;
+        background: radial-gradient(circle at center, #0a0f1e 0%, #03050b 100%);
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Grid neon de fondo */
+    body::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(#00ffcc20 1px, transparent 1px),
+            linear-gradient(90deg, #00ffcc20 1px, transparent 1px);
+        background-size: 40px 40px;
+        animation: gridMove 20s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes gridMove {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(40px, 40px); }
+    }
+
+    .container {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+
+    /* Tarjetas neon */
+    .card, .table-container, form {
+        background: rgba(10, 15, 30, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid #00ffcc;
+        border-radius: 24px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 0 20px #00ffcc40;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 0 40px #00ffcc80;
+        border-color: #ff00cc;
+    }
+
+    h1, h2, h3 {
+        color: #00ffcc;
+        text-shadow: 0 0 10px #00ffcc;
+        margin-bottom: 20px;
+    }
+
+    /* Botones */
+    .btn {
+        background: linear-gradient(90deg, #00ffcc20, #ff00cc20);
+        border: 1px solid #00ffcc;
+        color: #00ffcc;
+        padding: 10px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background: linear-gradient(90deg, #00ffcc, #ff00cc);
+        color: #0a0f1e;
+        box-shadow: 0 0 20px #00ffcc;
+    }
+
+    .btn-danger {
+        border-color: #ff00cc;
+        color: #ff00cc;
+    }
+
+    .btn-danger:hover {
+        background: #ff00cc;
+        color: #0a0f1e;
+    }
+
+    /* Tablas */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #cc88ff;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #00ffcc40;
+    }
+
+    th {
+        color: #00ffcc;
+        font-weight: 600;
+    }
+
+    tr:hover {
+        background: #00ffcc10;
+    }
+
+    /* Inputs */
+    input, select, textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(0, 255, 204, 0.05);
+        border: 1px solid #00ffcc;
+        border-radius: 16px;
+        color: #00ffcc;
+        font-family: inherit;
+        margin-bottom: 15px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #ff00cc;
+        box-shadow: 0 0 15px #ff00cc;
+    }
+
+    label {
+        color: #00ffcc;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    /* Header de navegación */
+    .navbar {
+        background: rgba(10, 15, 30, 0.9);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid #00ffcc;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .navbar a {
+        color: #00ffcc;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .navbar a:hover {
+        color: #ff00cc;
+        text-shadow: 0 0 8px #ff00cc;
+    }
+
+    .user-info {
+        color: #00ffcc;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* Mensajes de éxito/error */
+    .success {
+        background: #00ffcc20;
+        border-left: 4px solid #00ffcc;
+        color: #00ffcc;
+        padding: 12px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .error {
+        background: #ff00cc20;
+        border-left: 4px solid #ff00cc;
+        color: #ff00cc;
+        padding: 12px 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+</style>
 </head>
 <body>
     <div class="floating-book book-1">📖</div>
