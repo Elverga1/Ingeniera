@@ -397,15 +397,6 @@ $user_email = $_SESSION['user_email'];
                 </div>
             </a>
 
-            <a href="registrar_usuario.php" class="menu-card">
-                <div class="card-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <div class="card-content">
-                    <h3><i class="fas fa-fw fa-user-plus"></i> Registrar Usuario</h3>
-                    <p>Crea nuevas cuentas de usuario para el sistema biblioteca.</p>
-                </div>
-            </a>
         </div>
 
         <!-- Información de cookies (cumple con la rúbrica) -->
